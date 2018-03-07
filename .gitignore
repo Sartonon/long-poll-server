@@ -1,2 +1,3 @@
 .ideagit status
 node_modules
+build/

@@ -102,7 +102,6 @@ router.get('/messages', (req, res) => {
 });
 
 router.post('/messages', (req, res) => {
-  console.log(req.body);
   messages.push(req.body);
   messageBus.emit('message', req.body);
   res.status(200).end();
