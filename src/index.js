@@ -33,6 +33,6 @@ router.get('/pastMessages', (req, res) => {
   res.send(messages);
 });
 
-app.use('/longpoll', router);
+app.use('/', router);
 
 app.listen(3005, () => console.log('Example app listening on port 3000!'));
