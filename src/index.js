@@ -35,7 +35,7 @@ router.post('/messages', (req, res) => {
   const data = req.body;
   data.id = _.uniqueId('message_');
   messages.push(data);
-  messageBus.emit('message', req.body);
+  messageBus.emit('message', [req.body]);
   res.status(200).end();
 });
 
