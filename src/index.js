@@ -19,13 +19,18 @@ router.get('/', (req, res) => {
 });
 
 router.get('/messages', (req, res) => {
-  messageBus.once('message', data => {
-    res.json(data);
-  });
+  const index =  messages.findIndex(message => message.id === req.query.id);
+  if (index === messages.length) {
+    messageBus.once('message', data => {
+      res.json(data);
+    });
+  } else {
+    res.send(messages.slice(index + 1));
+  }
 });
 
 router.post('/messages', (req, res) => {
-  const data = reg.body;
+  const data = req.body;
   data.id = _.uniqueId('message_');
   messages.push(data);
   messageBus.emit('message', req.body);
