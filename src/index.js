@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const _ = require('lodash');
 const bodyParser = require('body-parser');
 const app = express();
 const router = express.Router();
@@ -24,7 +25,9 @@ router.get('/messages', (req, res) => {
 });
 
 router.post('/messages', (req, res) => {
-  messages.push(req.body);
+  const data = reg.body;
+  data.id = _.uniqueId('message_');
+  messages.push(data);
   messageBus.emit('message', req.body);
   res.status(200).end();
 });
