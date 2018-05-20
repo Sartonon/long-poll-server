@@ -20,6 +20,7 @@ router.get('/', (req, res) => {
 
 router.get('/messages', (req, res) => {
   const index =  messages.findIndex(message => message.id === req.query.id);
+  console.log(index);
   if (index === messages.length || !index) {
     messageBus.once('message', data => {
       res.json(data);
