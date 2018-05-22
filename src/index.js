@@ -37,6 +37,7 @@ router.get('/messages', (req, res) => {
       res.json(data);
     });
   } else {
+    sendingMessagesCount++;
     res.send(messages.slice(index + 1));
   }
 });
