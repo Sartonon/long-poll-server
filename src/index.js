@@ -18,7 +18,19 @@ router.get('/', (req, res) => {
   res.send('/');
 });
 
+let receivingMessagesCount = 0;
+let sendingMessagesCount = 0;
+setInterval(() => {
+  if (receivingMessagesCount || sendingMessagesCount) {
+    console.log("Receiving messages count: ", receivingMessagesCount++);
+    console.log("Sending messages count: ", sendingMessagesCount);
+  }
+  receivingMessagesCount = 0;
+  sendingMessagesCount = 0;
+}, 1000)
+
 router.get('/messages', (req, res) => {
+  receivingMessagesCount++;
   const index =  messages.findIndex(message => message.id === req.query.id);
   console.log(messages.length);
   if (index === messages.length - 1 || index === -1) {
@@ -31,6 +43,7 @@ router.get('/messages', (req, res) => {
 });
 
 router.post('/messages', (req, res) => {
+  sendingMessagesCount++;
   const data = req.body;
   data.id = _.uniqueId('message_');
   messages.push(data);

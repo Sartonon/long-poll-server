@@ -78,7 +78,8 @@ module.exports = __webpack_require__(1);
 
 const express = __webpack_require__(2);
 const cors = __webpack_require__(3);
-const bodyParser = __webpack_require__(4);
+const _ = __webpack_require__(4);
+const bodyParser = __webpack_require__(5);
 const app = express();
 const router = express.Router();
 
@@ -87,7 +88,7 @@ app.use(bodyParser.json());
 
 const messages = [];
 
-const EventEmitter = __webpack_require__(5).EventEmitter;
+const EventEmitter = __webpack_require__(6).EventEmitter;
 const messageBus = new EventEmitter();
 messageBus.setMaxListeners(100);
 
@@ -95,15 +96,36 @@ router.get('/', (req, res) => {
   res.send('/');
 });
 
+let receivingMessagesCount = 0;
+let sendingMessagesCount = 0;
+setInterval(() => {
+  if (receivingMessagesCount || sendingMessagesCount) {
+    console.log("Receiving messages count: ", receivingMessagesCount++);
+    console.log("Sending messages count: ", sendingMessagesCount);
+  }
+  receivingMessagesCount = 0;
+  sendingMessagesCount = 0;
+}, 1000);
+
 router.get('/messages', (req, res) => {
-  messageBus.once('message', data => {
-    res.json(data);
-  });
+  receivingMessagesCount++;
+  const index = messages.findIndex(message => message.id === req.query.id);
+  console.log(messages.length);
+  if (index === messages.length - 1 || index === -1) {
+    messageBus.once('message', data => {
+      res.json(data);
+    });
+  } else {
+    res.send(messages.slice(index + 1));
+  }
 });
 
 router.post('/messages', (req, res) => {
-  messages.push(req.body);
-  messageBus.emit('message', req.body);
+  sendingMessagesCount++;
+  const data = req.body;
+  data.id = _.uniqueId('message_');
+  messages.push(data);
+  messageBus.emit('message', [req.body]);
   res.status(200).end();
 });
 
@@ -111,9 +133,9 @@ router.get('/pastMessages', (req, res) => {
   res.send(messages);
 });
 
-app.use('/longpoll', router);
+app.use('/', router);
 
-app.listen(3000, () => console.log('Example app listening on port 3000!'));
+app.listen(3005, () => console.log('Example app listening on port 3000!'));
 
 /***/ }),
 /* 2 */
@@ -131,10 +153,16 @@ module.exports = require("cors");
 /* 4 */
 /***/ (function(module, exports) {
 
-module.exports = require("body-parser");
+module.exports = require("lodash");
 
 /***/ }),
 /* 5 */
+/***/ (function(module, exports) {
+
+module.exports = require("body-parser");
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports) {
 
 module.exports = require("events");
