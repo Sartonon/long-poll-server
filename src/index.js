@@ -32,7 +32,6 @@ setInterval(() => {
 router.get('/messages', (req, res) => {
   receivingMessagesCount++;
   const index =  messages.findIndex(message => message.id === req.query.id);
-  console.log(messages.length);
   if (index === messages.length - 1 || index === -1) {
     messageBus.once('message', data => {
       res.json(data);
