@@ -22,7 +22,7 @@ let receivingMessagesCount = 0;
 let sendingMessagesCount = 0;
 setInterval(() => {
   if (receivingMessagesCount || sendingMessagesCount) {
-    console.log("Receiving messages count: ", receivingMessagesCount++);
+    console.log("Receiving messages count: ", receivingMessagesCount);
     console.log("Sending messages count: ", sendingMessagesCount);
   }
   receivingMessagesCount = 0;
@@ -30,10 +30,10 @@ setInterval(() => {
 }, 1000)
 
 router.get('/messages', (req, res) => {
-  receivingMessagesCount++;
   const index =  messages.findIndex(message => message.id === req.query.id);
   if (index === messages.length - 1 || index === -1) {
     messageBus.once('message', data => {
+      sendingMessagesCount++;
       res.json(data);
     });
   } else {
@@ -42,7 +42,7 @@ router.get('/messages', (req, res) => {
 });
 
 router.post('/messages', (req, res) => {
-  sendingMessagesCount++;
+  receivingMessagesCount++;
   const data = req.body;
   data.id = _.uniqueId('message_');
   messages.push(data);
